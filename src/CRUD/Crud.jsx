@@ -3,6 +3,9 @@ import "../CRUD/Crud.css";
 
 function Crud() {
   const [product, setProduct] = useState([]);
+  const [dropCategory, setdropCategory] = useState("Sort-by-category");
+  const [dropLimit, setdropLimit] = useState("Limit");
+  const [sort, setSort] = useState(true);
   const [showInfo, setShowInfo] = useState(false);
   const [currentProduct, setCurrentProduct] = useState();
   // const [Id, setId] = useState(currentProduct?.id);
@@ -72,6 +75,30 @@ function Crud() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const Sort = (category, categoryName) => {
+    setdropCategory(categoryName);
+    fetch(`https://fakestoreapi.com/products/category/${category}`)
+      .then((res) => res.json())
+      .then((res) => setProduct(res))
+      .then((json) => console.log(json));
+  };
+
+  const Limit = (limit) => {
+    setdropLimit(limit);
+    fetch(`https://fakestoreapi.com/products?limit=${limit}`)
+      .then((res) => res.json())
+      .then((res) => setProduct(res))
+      .then((json) => console.log(json));
+  };
+
+  const sortProductList = (sortProd) => {
+    setSort(!sort);
+    fetch(`https://fakestoreapi.com/products?sort=${sortProd}`)
+      .then((res) => res.json())
+      .then((res) => setProduct(res))
+      .then((json) => console.log(json));
+  };
 
   return (
     <div>
@@ -186,6 +213,126 @@ function Crud() {
           ) : (
             <div className="product-table">
               <h1 className="text-center pb-5">Product's Detail</h1>
+              <div className="btn btn-group mb-5 d-flex align-item-center justify-content-end">
+                <div className="">
+                  <button
+                    type="button"
+                    class="btn btn-info dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    {dropCategory}
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Sort("men's clothing", "Men's Clothing")}
+                      >
+                        Men's Clothing
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Sort("jewelery", "Jewlery")}
+                      >
+                        Jewlery
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Sort("electronics", "Electronics")}
+                      >
+                        Electronics
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() =>
+                          Sort("women's clothing", "Women's Clothing")
+                        }
+                      >
+                        Women's Clothing
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                &nbsp; &nbsp; &nbsp;
+                <div className="btn-group">
+                  <button
+                    type="button"
+                    className="btn btn-info dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    {dropLimit}
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Limit("5")}
+                      >
+                        5
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Limit("10")}
+                      >
+                        10
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Limit("20")}
+                      >
+                        20
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        href="#"
+                        onClick={() => Limit("50")}
+                      >
+                        50
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                &nbsp; &nbsp; &nbsp;
+                <div className="btn-group sort-btn">
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    onClick={() =>
+                      sort ? sortProductList("desc") : sortProductList("asc")
+                    }
+                  >
+                    Sort&nbsp;&nbsp;
+                    <span className="icons">
+                      <i className="fa-solid fa-sort-down"></i>
+                      <i className="fa-solid fa-sort-up"></i>
+                    </span>
+                  </button>
+                </div>
+              </div>
               <table
                 className="table table-bordered table-hover"
                 style={{ cursor: "pointer" }}
