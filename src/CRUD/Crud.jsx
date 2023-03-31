@@ -8,12 +8,10 @@ function Crud() {
   const [sort, setSort] = useState(true);
   const [showInfo, setShowInfo] = useState(false);
   const [currentProduct, setCurrentProduct] = useState();
-  // const [Id, setId] = useState(currentProduct?.id);
   const [title, settitle] = useState(currentProduct?.title);
   const [price, setprice] = useState(currentProduct?.price);
   const [category, setcategory] = useState(currentProduct?.category);
   const [image, setimage] = useState(currentProduct?.image);
-  // const [rating, setrating] = useState(currentProduct?.rating);
   const [description, setdescription] = useState(currentProduct?.description);
 
   const getProductInfo = () => {
@@ -119,8 +117,6 @@ function Crud() {
                       id="productId"
                       name="productId"
                       defaultValue={currentProduct.id}
-                      // onClick={(e) => setId(e.target.value)}
-                      // onChange={(e) => setId(e.target.value)}
                     />
                   </div>
                   <div className="col-md-6">
@@ -134,7 +130,6 @@ function Crud() {
                       name="productTitle"
                       defaultValue={currentProduct.title}
                       onChange={(e) => settitle(e.target.value)}
-                      // onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-6">
@@ -148,7 +143,6 @@ function Crud() {
                       name="productPrice"
                       defaultValue={currentProduct.price}
                       onChange={(e) => setprice(e.target.value)}
-                      // onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-6">
@@ -162,7 +156,6 @@ function Crud() {
                       name="productCategory"
                       defaultValue={currentProduct.category}
                       onChange={(e) => setcategory(e.target.value)}
-                      // onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-6">
@@ -175,8 +168,6 @@ function Crud() {
                       id="rating"
                       name="rating"
                       defaultValue={currentProduct.rating.rate}
-                      // onChange={(e) => setrating(e.target.value)}
-                      // onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-6">
@@ -195,7 +186,6 @@ function Crud() {
                       style={{ height: "100px" }}
                       defaultValue={currentProduct.description}
                       onChange={(e) => setdescription(e.target.value)}
-                      // onChange={handleInputChange}
                     ></textarea>
                   </div>
                   <div className="col-12">
@@ -214,7 +204,7 @@ function Crud() {
             <div className="product-table">
               <h1 className="text-center pb-5">Product's Detail</h1>
               <div className="btn btn-group mb-5 d-flex align-item-center justify-content-end">
-                <div className="">
+                <div className="category">
                   <button
                     type="button"
                     class="btn btn-info dropdown-toggle"
@@ -265,7 +255,7 @@ function Crud() {
                   </ul>
                 </div>
                 &nbsp; &nbsp; &nbsp;
-                <div className="btn-group">
+                <div className="btn-group limit">
                   <button
                     type="button"
                     className="btn btn-info dropdown-toggle"
@@ -314,9 +304,9 @@ function Crud() {
                   </ul>
                 </div>
                 &nbsp; &nbsp; &nbsp;
-                <div className="btn-group sort-btn">
+                <div className="btn-group sort-btn sort-product">
                   <button
-                    className="btn btn-primary"
+                    className="btn btn-info"
                     type="button"
                     data-toggle="dropdown"
                     aria-haspopup="true"
