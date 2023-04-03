@@ -17,16 +17,6 @@ function Crud() {
   );
   const [productImage, setimage] = useState(currentProduct?.image);
 
-  const getProductInfo = () => {
-    // setId(currentProduct.id);
-    settitle(currentProduct?.title);
-    setprice(currentProduct?.price);
-    setcategory(currentProduct?.category);
-    // setrating(currentProduct.rating.rate);
-    setdescription(currentProduct?.description);
-    setimage(currentProduct?.image);
-  };
-
   const fetchData = async () => {
     try {
       const response = await fetch("https://fakestoreapi.com/products");
