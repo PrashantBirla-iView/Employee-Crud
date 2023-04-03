@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../CRUD/Crud.css";
+import "../CRUD/Card.css";
 
 function Crud() {
   const [product, setProduct] = useState([]);
@@ -8,20 +9,22 @@ function Crud() {
   const [sort, setSort] = useState(true);
   const [showInfo, setShowInfo] = useState(false);
   const [currentProduct, setCurrentProduct] = useState();
-  const [title, settitle] = useState(currentProduct?.title);
-  const [price, setprice] = useState(currentProduct?.price);
-  const [category, setcategory] = useState(currentProduct?.category);
-  const [image, setimage] = useState(currentProduct?.image);
-  const [description, setdescription] = useState(currentProduct?.description);
+  const [productTitle, settitle] = useState(currentProduct?.title);
+  const [productPrice, setprice] = useState(currentProduct?.price);
+  const [productCategory, setcategory] = useState(currentProduct?.category);
+  const [productDescription, setdescription] = useState(
+    currentProduct?.description
+  );
+  const [productImage, setimage] = useState(currentProduct?.image);
 
   const getProductInfo = () => {
     // setId(currentProduct.id);
-    settitle(currentProduct.title);
-    setprice(currentProduct.price);
-    setcategory(currentProduct.category);
+    settitle(currentProduct?.title);
+    setprice(currentProduct?.price);
+    setcategory(currentProduct?.category);
     // setrating(currentProduct.rating.rate);
-    setdescription(currentProduct.description);
-    setimage(currentProduct.image);
+    setdescription(currentProduct?.description);
+    setimage(currentProduct?.image);
   };
 
   const fetchData = async () => {
@@ -52,14 +55,14 @@ function Crud() {
 
   const updateProduct = (event) => {
     event.preventDefault();
+    // getProductInfo();
 
-    getProductInfo();
     let formData = {
-      title,
-      price,
-      description,
-      image,
-      category,
+      title: productTitle,
+      price: productPrice,
+      category: productCategory,
+      description: productDescription,
+      image: productImage,
     };
     fetch(`https://fakestoreapi.com/products/${currentProduct.id}`, {
       method: "PUT",
@@ -68,6 +71,9 @@ function Crud() {
       .then((res) => res.json())
       .then((json) => console.log(json));
     console.warn(formData);
+    console.log(currentProduct);
+    console.log("Title", currentProduct.title);
+    console.log("Price", currentProduct.price);
   };
 
   useEffect(() => {
@@ -192,7 +198,7 @@ function Crud() {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={updateProduct}
+                      onClick={(e) => updateProduct(e)}
                     >
                       Update Product
                     </button>
@@ -323,6 +329,18 @@ function Crud() {
                   </button>
                 </div>
               </div>
+
+              <div className="card-container">
+                {product.map((prod) => (
+                  <div className="card">
+                    <div className="imgBx">
+                      <img src={prod.image} alt="" />
+                    </div>
+                    <h6>Price : ${prod.price}</h6>
+                  </div>
+                ))}
+              </div>
+
               <table
                 className="table table-bordered table-hover"
                 style={{ cursor: "pointer" }}
