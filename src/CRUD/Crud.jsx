@@ -15,7 +15,6 @@ function Crud() {
   const [productDescription, setdescription] = useState(
     currentProduct?.description
   );
-  const [productImage, setimage] = useState(currentProduct?.image);
 
   const fetchData = async () => {
     try {
@@ -52,7 +51,7 @@ function Crud() {
       price: productPrice,
       category: productCategory,
       description: productDescription,
-      image: productImage,
+      image: currentProduct?.image,
     };
     fetch(`https://fakestoreapi.com/products/${currentProduct.id}`, {
       method: "PUT",
