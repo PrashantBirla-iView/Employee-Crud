@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Crud from "./CRUD/Crud";
-import DotLoader from "react-spinners/DotLoader";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function App() {
   const [loading, setloading] = useState(false);
@@ -24,11 +24,11 @@ function App() {
   return (
     <>
       {loading ? (
-        <DotLoader
+        <ClipLoader
           color={"#36d7b7"}
           loading={loading}
           cssOverride={override}
-          size={150}
+          size={100}
           aria-label="Loading Spinner"
           data-testid="loader"
         />
