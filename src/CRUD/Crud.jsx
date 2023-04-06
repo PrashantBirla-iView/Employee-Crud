@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../CRUD/Crud.css";
 import "../CRUD/Card.css";
 import axios from "axios";
+
 function Crud() {
   const [product, setProduct] = useState([]);
   const [dropCategory, setdropCategory] = useState("Sort-by-category");
@@ -14,7 +15,12 @@ function Crud() {
   const [productDescription, setdescription] = useState("");
   const [productImage, setimage] = useState("");
   const [productRating, setrating] = useState("");
+  const [productRatingCount, setproductRatingCount] = useState("");
   const [productId, setid] = useState("");
+  const [productDisplay, setproductDisplay] = useState(5);
+  const [buttonClicked, setbuttonClicked] = useState(false);
+  const [scrollBar, setscrollBar] = useState();
+
   const fetchData = async () => {
     const result = await axios.get("http://localhost:3004/data");
     setProduct(result.data);
@@ -24,6 +30,31 @@ function Crud() {
     fetchData();
   }, []);
 
+  // const displayProduct = () => {
+  //   const html = document.documentElement;
+  //   const height = html.getBoundingClientRect().height;
+
+  //   if (window.scrollY >= height) {
+  //     console.log("Height", height);
+  //     setTimeout(() => {
+  //       setproductDisplay(productDisplay + 3);
+  //     }, 1500);
+  //   } else {
+  //   }
+  // };
+
+  useEffect(() => {
+    // displayProduct();
+    // window.addEventListener("scroll", displayProduct);
+    // const html = document.documentElement;
+    // const height = html.getBoundingClientRect().height;
+
+    // console.log("height", height);
+    setTimeout(() => {
+      setproductDisplay(productDisplay + 3);
+    }, 1500);
+  }, [productDisplay]);
+
   const deleteProduct = async (id) => {
     await axios.delete(`http://localhost:3004/data/${id}`);
     fetchData();
@@ -31,14 +62,15 @@ function Crud() {
 
   const handleClick = (prod) => {
     setCurrentProduct(prod);
+    setid(prod.id);
     settitle(prod.title);
     setprice(prod.price);
     setcategory(prod.category);
-    setdescription(prod.description);
+    setrating(prod?.rating?.rate);
+    setproductRatingCount(prod?.rating?.count);
     setimage(prod.image);
-    setrating(prod.rating);
-    setid(prod.id);
-    console.log(prod);
+    setdescription(prod.description);
+    // console.log(prod);
   };
 
   const updateProduct = async (id) => {
@@ -49,26 +81,20 @@ function Crud() {
       description: productDescription,
       category: productCategory,
       image: productImage,
-      ratings: productRating,
+      rating: { rate: productRating, count: productRatingCount },
     });
   };
 
-  // useEffect(() => {
-  //   // fetchData();
-  //   //   fetch("data.json")
-  //   //     .then((response) => response.json())
-  //   //     .then((data) => console.log(data))
-  //   // .then((jsonData) => setProduct(jsonData))
-  //   //     .catch((error) => console.error(error));
-  //   setProduct(data);
-  // }, []);
-
-  const Sort = (category, categoryName) => {
+  const Sort = async (category, categoryName) => {
     setdropCategory(categoryName);
-    fetch(`https://fakestoreapi.com/products/category/${category}`)
-      .then((res) => res.json())
-      .then((res) => setProduct(res))
-      .then((json) => console.log(json));
+    // fetch(`https://fakestoreapi.com/products/category/${category}`)
+    //   .then((res) => res.json())
+    //   .then((res) => setProduct(res))
+    //   .then((json) => console.log(json));
+    const result = await axios.get("http://localhost:3004/data");
+    // setProduct(result.data);
+    const cat = result.data.filter((item) => item.category === category);
+    setProduct(cat);
   };
 
   const Limit = (limit) => {
@@ -87,17 +113,41 @@ function Crud() {
       .then((json) => console.log(json));
   };
 
+  const addProduct = async () => {
+    axios.post(`http://localhost:3004/data`, {
+      id: productId,
+      title: productTitle,
+      price: productPrice,
+      description: productDescription,
+      category: productCategory,
+      image: productImage,
+      rating: { rate: productRating, count: productRatingCount },
+    });
+  };
+
+  const handleAddProduct = () => {
+    console.log("Helloooooo");
+    setid("");
+    settitle("");
+    setprice("");
+    setcategory("");
+    setimage("");
+    setrating("");
+    setproductRatingCount("");
+    setdescription("");
+    setbuttonClicked(true);
+  };
+
   return (
-    <div>
+    <div className="main">
       <div className="container">
         <div className="row">
           <div className="product-table">
-            <h1 className="text-center pb-5">Product's Detail</h1>
-            <div className="btn btn-group mb-5 d-flex align-item-center justify-content-end">
-              <div className="category">
+            <div className="btn btn-group mt-5 d-flex align-item-center justify-content-end">
+              <div className="btn-group category">
                 <button
                   type="button"
-                  class="btn btn-info dropdown-toggle"
+                  class="btn btn-success dropdown-toggle buttons"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
@@ -148,7 +198,7 @@ function Crud() {
               <div className="btn-group limit">
                 <button
                   type="button"
-                  className="btn btn-info dropdown-toggle"
+                  className="btn btn-success dropdown-toggle buttons"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
@@ -196,7 +246,7 @@ function Crud() {
               &nbsp; &nbsp; &nbsp;
               <div className="btn-group sort-btn sort-product">
                 <button
-                  className="btn btn-info"
+                  className="btn btn-success buttons"
                   type="button"
                   data-toggle="dropdown"
                   aria-haspopup="true"
@@ -212,30 +262,46 @@ function Crud() {
                   </span>
                 </button>
               </div>
+              &nbsp; &nbsp; &nbsp;
+              <div className="btn-group add">
+                <button
+                  type="button"
+                  className="btn btn-success buttons"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  onClick={handleAddProduct}
+                >
+                  Add
+                </button>
+              </div>
             </div>
 
             <div
-              class="modal fade"
+              className="modal fade"
               id="exampleModal"
               tabindex="-1"
               aria-labelledby="exampleModalLabel"
               aria-hidden="true"
             >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
+              <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5
+                      className="modal-title"
+                      id="exampleModalLabel"
+                      style={{ color: "#000" }}
+                    >
                       Product Info
                     </h5>
                     <button
                       type="button"
-                      class="btn-close"
+                      className="btn-close"
                       data-bs-dismiss="modal"
                       aria-label="Close"
                     ></button>
                   </div>
-                  <div class="modal-body">
-                    <form className="">
+                  <div className="modal-body ">
+                    <form className="row g-3">
                       <div className="col-md-6">
                         <label for="productId" className="form-label">
                           ID
@@ -245,7 +311,9 @@ function Crud() {
                           className="form-control"
                           id="productId"
                           name="productId"
-                          defaultValue={currentProduct?.id}
+                          defaultValue={buttonClicked ? "" : currentProduct?.id}
+                          placeholder="Product ID"
+                          onChange={(e) => setid(e.target.value)}
                         />
                       </div>
                       <div className="col-md-6">
@@ -257,7 +325,10 @@ function Crud() {
                           className="form-control"
                           id="productTitle"
                           name="productTitle"
-                          defaultValue={currentProduct?.title}
+                          defaultValue={
+                            buttonClicked ? "" : currentProduct?.title
+                          }
+                          placeholder="Product Title"
                           onChange={(e) => settitle(e.target.value)}
                         />
                       </div>
@@ -270,7 +341,10 @@ function Crud() {
                           className="form-control"
                           id="productPrice"
                           name="productPrice"
-                          defaultValue={currentProduct?.price}
+                          defaultValue={
+                            buttonClicked ? "" : currentProduct?.price
+                          }
+                          placeholder="Price"
                           onChange={(e) => setprice(e.target.value)}
                         />
                       </div>
@@ -283,7 +357,10 @@ function Crud() {
                           className="form-control"
                           id="productCategory"
                           name="productCategory"
-                          defaultValue={currentProduct?.category}
+                          defaultValue={
+                            buttonClicked ? "" : currentProduct?.category
+                          }
+                          placeholder="Category"
                           onChange={(e) => setcategory(e.target.value)}
                         />
                       </div>
@@ -296,33 +373,55 @@ function Crud() {
                           className="form-control"
                           id="rating"
                           name="rating"
-                          defaultValue={currentProduct?.rating?.rate}
+                          defaultValue={
+                            buttonClicked ? "" : currentProduct?.rating?.rate
+                          }
+                          placeholder="Rating"
+                          onChange={(e) => setrating(e.target.value)}
                         />
                       </div>
                       <div className="col-md-6">
-                        <img
-                          src={currentProduct?.image}
-                          alt=""
-                          style={{ height: "150px", width: "150px" }}
-                        />
+                        {buttonClicked ? (
+                          <>
+                            <label for="rating" className="form-label">
+                              Rating
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="rating"
+                              name="rating"
+                              placeholder="Image URL"
+                              onChange={(e) => setimage(e.target.value)}
+                            />
+                          </>
+                        ) : (
+                          <img
+                            src={currentProduct?.image}
+                            alt=""
+                            style={{ height: "150px", width: "150px" }}
+                          />
+                        )}
                       </div>
                       <div className="form-floating">
                         <textarea
                           className="form-control"
-                          placeholder="Leave a comment here"
+                          placeholder="Description"
                           id="description"
                           name="description"
                           style={{ height: "100px" }}
-                          defaultValue={currentProduct?.description}
+                          defaultValue={
+                            buttonClicked ? "" : currentProduct?.description
+                          }
                           onChange={(e) => setdescription(e.target.value)}
                         ></textarea>
                       </div>
                     </form>
                   </div>
-                  <div class="modal-footer">
+                  <div className="modal-footer">
                     <button
                       type="button"
-                      class="btn btn-secondary"
+                      className="btn btn-secondary"
                       data-bs-dismiss="modal"
                     >
                       Close
@@ -331,9 +430,14 @@ function Crud() {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={() => updateProduct(currentProduct?.id)}
+                      data-bs-dismiss="modal"
+                      onClick={() =>
+                        buttonClicked
+                          ? addProduct()
+                          : updateProduct(currentProduct?.id)
+                      }
                     >
-                      Update Product
+                      {buttonClicked ? "Add Product" : "Update Product"}{" "}
                     </button>
                   </div>
                 </div>
@@ -341,31 +445,38 @@ function Crud() {
             </div>
 
             <div className="card-container">
-              {product.map((prod) => (
-                <div className="card">
-                  <div className="imgBx">
-                    <img src={prod.image} alt="" />
-                  </div>
-                  <div className="action-buttons">
-                    <h6>Price : ${prod.price}</h6>
-                    <button
-                      type="button"
-                      class="btn btn-success"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      onClick={() => handleClick(prod)}
-                    >
-                      Update
-                    </button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => deleteProduct(prod.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {product.map((prod, index) =>
+                index < productDisplay ? (
+                  <>
+                    <div className="card">
+                      <div className="imgBx">
+                        <img src={prod.image} alt="" />
+                      </div>
+                      <div className="action-buttons">
+                        <h6>Price : ${prod.price}</h6>
+
+                        <button
+                          type="button"
+                          class="btn btn-info"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModal"
+                          onClick={() => handleClick(prod)}
+                        >
+                          Update
+                        </button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => deleteProduct(prod.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )
+              )}
             </div>
           </div>
         </div>
