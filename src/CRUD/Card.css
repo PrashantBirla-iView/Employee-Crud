@@ -1,3 +1,8 @@
+.icons :nth-child(2) {
+  position: relative;
+  right: 10px;
+}
+
 .main {
   position: relative;
   width: 100%;

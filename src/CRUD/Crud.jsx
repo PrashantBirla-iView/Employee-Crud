@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../CRUD/Crud.css";
 import "../CRUD/Card.css";
 import axios from "axios";
+import FadeLoader from "react-spinners/FadeLoader";
 
 function Crud() {
   const [product, setProduct] = useState([]);
@@ -18,8 +19,18 @@ function Crud() {
   const [productRatingCount, setproductRatingCount] = useState("");
   const [productId, setid] = useState("");
   const [productDisplay, setproductDisplay] = useState(5);
-  const [buttonClicked, setbuttonClicked] = useState(false);
-  const [scrollBar, setscrollBar] = useState();
+  const [buttonClicked, setbuttonClicked] = useState();
+  const [loading, setloading] = useState(false);
+  const [scrollBar, setscrollBar] = useState(350);
+
+  const override = {
+    position: "relative",
+    left: "0",
+    top: "0",
+    right: "0",
+    bottom: "0",
+    margin: "auto",
+  };
 
   const fetchData = async () => {
     const result = await axios.get("http://localhost:3004/data");
@@ -28,39 +39,38 @@ function Crud() {
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  // const displayProduct = () => {
-  //   const html = document.documentElement;
-  //   const height = html.getBoundingClientRect().height;
-
-  //   if (window.scrollY >= height) {
-  //     console.log("Height", height);
-  //     setTimeout(() => {
-  //       setproductDisplay(productDisplay + 3);
-  //     }, 1500);
-  //   } else {
-  //   }
-  // };
+  }, [product]);
 
   useEffect(() => {
-    // displayProduct();
-    // window.addEventListener("scroll", displayProduct);
-    // const html = document.documentElement;
-    // const height = html.getBoundingClientRect().height;
+    function displayProduct() {
+      if (window.scrollY >= scrollBar) {
+        setloading(true);
+        setTimeout(() => {
+          setproductDisplay(productDisplay + 3);
+          setloading(false);
+        }, 1000);
+        setscrollBar(
+          document.documentElement.getBoundingClientRect().height - 300
+        );
+      }
+    }
 
-    // console.log("height", height);
-    setTimeout(() => {
-      setproductDisplay(productDisplay + 3);
-    }, 1500);
+    window.addEventListener("scroll", displayProduct);
+
+    return () => {
+      window.removeEventListener("scroll", displayProduct);
+    };
   }, [productDisplay]);
 
   const deleteProduct = async (id) => {
+    // window.confirm("Do you want to delete");
     await axios.delete(`http://localhost:3004/data/${id}`);
     fetchData();
   };
 
   const handleClick = (prod) => {
+    setbuttonClicked(false);
+    console.log("handleClick", buttonClicked);
     setCurrentProduct(prod);
     setid(prod.id);
     settitle(prod.title);
@@ -70,11 +80,11 @@ function Crud() {
     setproductRatingCount(prod?.rating?.count);
     setimage(prod.image);
     setdescription(prod.description);
-    // console.log(prod);
+    console.log(prod);
   };
 
   const updateProduct = async (id) => {
-    await axios.put(`http://localhost:3004/data/${id}`, {
+    const updatedProduct = await axios.put(`http://localhost:3004/data/${id}`, {
       id: productId,
       title: productTitle,
       price: productPrice,
@@ -83,26 +93,28 @@ function Crud() {
       image: productImage,
       rating: { rate: productRating, count: productRatingCount },
     });
+    console.log("Update Product Button", buttonClicked);
+    setProduct((prev) => [...prev, updatedProduct]);
+    // setbuttonClicked(true);
+    alert("Product Updated Successfully!!");
   };
 
   const Sort = async (category, categoryName) => {
     setdropCategory(categoryName);
-    // fetch(`https://fakestoreapi.com/products/category/${category}`)
-    //   .then((res) => res.json())
-    //   .then((res) => setProduct(res))
-    //   .then((json) => console.log(json));
     const result = await axios.get("http://localhost:3004/data");
-    // setProduct(result.data);
     const cat = result.data.filter((item) => item.category === category);
     setProduct(cat);
   };
 
-  const Limit = (limit) => {
+  const Limit = async (limit) => {
     setdropLimit(limit);
-    fetch(`https://fakestoreapi.com/products?limit=${limit}`)
-      .then((res) => res.json())
-      .then((res) => setProduct(res))
-      .then((json) => console.log(json));
+    // fetch(`https://fakestoreapi.com/products?limit=${limit}`)
+    //   .then((res) => res.json())
+    //   .then((res) => setProduct(res))
+    //   .then((json) => console.log(json));
+    const result = await axios.get("http://localhost:3004/data");
+    const limitedData = result.data.filter((item) => item.index <= limit);
+    setProduct(limitedData);
   };
 
   const sortProductList = (sortProd) => {
@@ -114,7 +126,8 @@ function Crud() {
   };
 
   const addProduct = async () => {
-    axios.post(`http://localhost:3004/data`, {
+    setbuttonClicked(false);
+    const newProduct = axios.post(`http://localhost:3004/data`, {
       id: productId,
       title: productTitle,
       price: productPrice,
@@ -123,10 +136,13 @@ function Crud() {
       image: productImage,
       rating: { rate: productRating, count: productRatingCount },
     });
+    console.log("Add Product Button", buttonClicked);
+    setProduct((prev) => [...prev, newProduct]);
+    alert("Product Added Successfully!!");
   };
 
   const handleAddProduct = () => {
-    console.log("Helloooooo");
+    setbuttonClicked(true);
     setid("");
     settitle("");
     setprice("");
@@ -135,7 +151,7 @@ function Crud() {
     setrating("");
     setproductRatingCount("");
     setdescription("");
-    setbuttonClicked(true);
+    console.log("handleAddProduct", buttonClicked);
   };
 
   return (
@@ -311,7 +327,10 @@ function Crud() {
                           className="form-control"
                           id="productId"
                           name="productId"
-                          defaultValue={buttonClicked ? "" : currentProduct?.id}
+                          // defaultValue={
+                          //   buttonClicked ? productId : currentProduct?.id
+                          // }
+                          value={productId}
                           placeholder="Product ID"
                           onChange={(e) => setid(e.target.value)}
                         />
@@ -325,9 +344,10 @@ function Crud() {
                           className="form-control"
                           id="productTitle"
                           name="productTitle"
-                          defaultValue={
-                            buttonClicked ? "" : currentProduct?.title
-                          }
+                          // defaultValue={
+                          //   buttonClicked ? productTitle : currentProduct?.title
+                          // }
+                          value={productTitle}
                           placeholder="Product Title"
                           onChange={(e) => settitle(e.target.value)}
                         />
@@ -341,9 +361,11 @@ function Crud() {
                           className="form-control"
                           id="productPrice"
                           name="productPrice"
-                          defaultValue={
-                            buttonClicked ? "" : currentProduct?.price
-                          }
+                          value={productPrice}
+                          // defaultValue={
+                          //   buttonClicked ? productPrice : currentProduct?.price
+                          // }
+
                           placeholder="Price"
                           onChange={(e) => setprice(e.target.value)}
                         />
@@ -357,9 +379,12 @@ function Crud() {
                           className="form-control"
                           id="productCategory"
                           name="productCategory"
-                          defaultValue={
-                            buttonClicked ? "" : currentProduct?.category
-                          }
+                          // defaultValue={
+                          //   buttonClicked
+                          //     ? productCategory
+                          //     : currentProduct?.category
+                          // }
+                          value={productCategory}
                           placeholder="Category"
                           onChange={(e) => setcategory(e.target.value)}
                         />
@@ -373,9 +398,12 @@ function Crud() {
                           className="form-control"
                           id="rating"
                           name="rating"
-                          defaultValue={
-                            buttonClicked ? "" : currentProduct?.rating?.rate
-                          }
+                          // defaultValue={
+                          //   buttonClicked
+                          //     ? productRating
+                          //     : currentProduct?.rating?.rate
+                          // }
+                          value={productRating}
                           placeholder="Rating"
                           onChange={(e) => setrating(e.target.value)}
                         />
@@ -410,9 +438,12 @@ function Crud() {
                           id="description"
                           name="description"
                           style={{ height: "100px" }}
-                          defaultValue={
-                            buttonClicked ? "" : currentProduct?.description
-                          }
+                          // defaultValue={
+                          //   buttonClicked
+                          //     ? productDescription
+                          //     : currentProduct?.description
+                          // }
+                          value={productDescription}
                           onChange={(e) => setdescription(e.target.value)}
                         ></textarea>
                       </div>
@@ -448,7 +479,7 @@ function Crud() {
               {product.map((prod, index) =>
                 index < productDisplay ? (
                   <>
-                    <div className="card">
+                    <div className="card" key={index}>
                       <div className="imgBx">
                         <img src={prod.image} alt="" />
                       </div>
@@ -477,6 +508,14 @@ function Crud() {
                   ""
                 )
               )}
+              <FadeLoader
+                color={"#264653"}
+                loading={loading}
+                cssOverride={override}
+                size={100}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
             </div>
           </div>
         </div>
