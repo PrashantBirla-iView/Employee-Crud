@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
-import "../CRUD/Crud.css";
 import "../CRUD/Card.css";
 import axios from "axios";
 import FadeLoader from "react-spinners/FadeLoader";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object().shape({
+  productId: Yup.string().required("Product ID is required"),
+  productTitle: Yup.string().required("Title is required"),
+  productPrice: Yup.string().required("Price is required"),
+  productCategory: Yup.string().required("Select a category from dropdown"),
+  productRating: Yup.string().required("Rating is required"),
+  productImage: Yup.string().required("Enter url for the image"),
+  productDescription: Yup.string().required("Product description is required"),
+});
 
 function Crud() {
   const [product, setProduct] = useState([]);
-  const [dropCategory, setdropCategory] = useState("Sort-by-category");
-  const [dropLimit, setdropLimit] = useState("Limit");
+  const [dropCategory, setdropCategory] = useState("Set-Category");
   const [sort, setSort] = useState(true);
   const [currentProduct, setCurrentProduct] = useState();
   const [productTitle, settitle] = useState("");
@@ -21,36 +30,34 @@ function Crud() {
   const [productDisplay, setproductDisplay] = useState(5);
   const [buttonClicked, setbuttonClicked] = useState();
   const [loading, setloading] = useState(false);
-  const [scrollBar, setscrollBar] = useState(350);
+  const [scrollBar, setscrollBar] = useState(100);
+  const [productUpdated, setproductUpdated] = useState(false);
+  let productID;
 
   const override = {
-    position: "relative",
+    position: "fixed",
     left: "0",
-    top: "0",
+    top: "0%",
     right: "0",
     bottom: "0",
     margin: "auto",
   };
 
-  const fetchData = async () => {
-    const result = await axios.get("http://localhost:3004/data");
-    setProduct(result.data);
-  };
-
   useEffect(() => {
+    console.log("hello!!");
     fetchData();
-  }, [product]);
+  }, [productUpdated]);
 
   useEffect(() => {
     function displayProduct() {
       if (window.scrollY >= scrollBar) {
         setloading(true);
         setTimeout(() => {
-          setproductDisplay(productDisplay + 3);
+          setproductDisplay(productDisplay + 5);
           setloading(false);
         }, 1000);
         setscrollBar(
-          document.documentElement.getBoundingClientRect().height - 300
+          document.documentElement.getBoundingClientRect().height - 500
         );
       }
     }
@@ -60,11 +67,20 @@ function Crud() {
     return () => {
       window.removeEventListener("scroll", displayProduct);
     };
-  }, [productDisplay]);
+  }, [productDisplay, scrollBar]);
 
-  const deleteProduct = async (id) => {
-    // window.confirm("Do you want to delete");
-    await axios.delete(`http://localhost:3004/data/${id}`);
+  const fetchData = async () => {
+    const result = await axios.get("http://localhost:3004/data");
+    setProduct(result.data);
+  };
+
+  const handleDelete = (id) => {
+    productID = id;
+  };
+
+  const deleteProduct = async () => {
+    // const result = window.confirm("Do you want to delete");
+    await axios.delete(`http://localhost:3004/data/${productID}`);
     fetchData();
   };
 
@@ -72,14 +88,15 @@ function Crud() {
     setbuttonClicked(false);
     console.log("handleClick", buttonClicked);
     setCurrentProduct(prod);
-    setid(prod.id);
-    settitle(prod.title);
-    setprice(prod.price);
-    setcategory(prod.category);
+    setid(prod?.id);
+    settitle(prod?.title);
+    setprice(prod?.price);
+    setcategory(prod?.category);
+    setdropCategory(prod?.category);
     setrating(prod?.rating?.rate);
     setproductRatingCount(prod?.rating?.count);
-    setimage(prod.image);
-    setdescription(prod.description);
+    setimage(prod?.image);
+    setdescription(prod?.description);
     console.log(prod);
   };
 
@@ -93,9 +110,10 @@ function Crud() {
       image: productImage,
       rating: { rate: productRating, count: productRatingCount },
     });
-    console.log("Update Product Button", buttonClicked);
+    // console.log("Update Product Button", buttonClicked);
     setProduct((prev) => [...prev, updatedProduct]);
     // setbuttonClicked(true);
+    setproductUpdated(true);
     alert("Product Updated Successfully!!");
   };
 
@@ -106,27 +124,18 @@ function Crud() {
     setProduct(cat);
   };
 
-  const Limit = async (limit) => {
-    setdropLimit(limit);
-    // fetch(`https://fakestoreapi.com/products?limit=${limit}`)
-    //   .then((res) => res.json())
-    //   .then((res) => setProduct(res))
-    //   .then((json) => console.log(json));
-    const result = await axios.get("http://localhost:3004/data");
-    const limitedData = result.data.filter((item) => item.index <= limit);
-    setProduct(limitedData);
-  };
-
   const sortProductList = (sortProd) => {
+    let descending = [];
+    let ascending = [];
+    descending = [...product].sort((a, b) => b.id - a.id);
+    ascending = [...product].sort((a, b) => a.id - b.id);
+    sort ? setProduct(descending) : setProduct(ascending);
     setSort(!sort);
-    fetch(`https://fakestoreapi.com/products?sort=${sortProd}`)
-      .then((res) => res.json())
-      .then((res) => setProduct(res))
-      .then((json) => console.log(json));
   };
 
   const addProduct = async () => {
     setbuttonClicked(false);
+    setproductUpdated(true);
     const newProduct = axios.post(`http://localhost:3004/data`, {
       id: productId,
       title: productTitle,
@@ -136,7 +145,7 @@ function Crud() {
       image: productImage,
       rating: { rate: productRating, count: productRatingCount },
     });
-    console.log("Add Product Button", buttonClicked);
+    // console.log("Add Product Button", buttonClicked);
     setProduct((prev) => [...prev, newProduct]);
     alert("Product Added Successfully!!");
   };
@@ -154,6 +163,18 @@ function Crud() {
     console.log("handleAddProduct", buttonClicked);
   };
 
+  const productInfo = (productINFO) => {
+    console.log("Hellloooo!!");
+    console.log(productINFO);
+    setid(productINFO?.id);
+    settitle(productINFO?.title);
+    setprice(productINFO?.price);
+    setcategory(productINFO?.category);
+    setrating(productINFO?.rating?.rate);
+    setimage(productINFO?.image);
+    setdescription(productINFO?.description);
+  };
+
   return (
     <div className="main">
       <div className="container">
@@ -163,7 +184,7 @@ function Crud() {
               <div className="btn-group category">
                 <button
                   type="button"
-                  class="btn btn-success dropdown-toggle buttons"
+                  class="btn  dropdown-toggle buttons text-white"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
@@ -211,58 +232,9 @@ function Crud() {
                 </ul>
               </div>
               &nbsp; &nbsp; &nbsp;
-              <div className="btn-group limit">
-                <button
-                  type="button"
-                  className="btn btn-success dropdown-toggle buttons"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  {dropLimit}
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      href="#"
-                      onClick={() => Limit("5")}
-                    >
-                      5
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      href="#"
-                      onClick={() => Limit("10")}
-                    >
-                      10
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      href="#"
-                      onClick={() => Limit("20")}
-                    >
-                      20
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      href="#"
-                      onClick={() => Limit("50")}
-                    >
-                      50
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              &nbsp; &nbsp; &nbsp;
               <div className="btn-group sort-btn sort-product">
                 <button
-                  className="btn btn-success buttons"
+                  className="btn  buttons text-white"
                   type="button"
                   data-toggle="dropdown"
                   aria-haspopup="true"
@@ -282,7 +254,7 @@ function Crud() {
               <div className="btn-group add">
                 <button
                   type="button"
-                  className="btn btn-success buttons"
+                  className="btn buttons text-white"
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
                   onClick={handleAddProduct}
@@ -323,16 +295,16 @@ function Crud() {
                           ID
                         </label>
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
                           id="productId"
                           name="productId"
-                          // defaultValue={
-                          //   buttonClicked ? productId : currentProduct?.id
-                          // }
+                          min={0}
                           value={productId}
                           placeholder="Product ID"
                           onChange={(e) => setid(e.target.value)}
+                          required
+                          autoComplete="off"
                         />
                       </div>
                       <div className="col-md-6">
@@ -344,12 +316,11 @@ function Crud() {
                           className="form-control"
                           id="productTitle"
                           name="productTitle"
-                          // defaultValue={
-                          //   buttonClicked ? productTitle : currentProduct?.title
-                          // }
                           value={productTitle}
                           placeholder="Product Title"
                           onChange={(e) => settitle(e.target.value)}
+                          required
+                          autoComplete="off"
                         />
                       </div>
                       <div className="col-md-6">
@@ -357,78 +328,136 @@ function Crud() {
                           Price
                         </label>
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
                           id="productPrice"
                           name="productPrice"
                           value={productPrice}
-                          // defaultValue={
-                          //   buttonClicked ? productPrice : currentProduct?.price
-                          // }
-
+                          min={0}
                           placeholder="Price"
                           onChange={(e) => setprice(e.target.value)}
+                          required
+                          autoComplete="off"
                         />
                       </div>
                       <div className="col-md-6">
-                        <label for="productCategory" className="form-label">
-                          Category
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="productCategory"
-                          name="productCategory"
-                          // defaultValue={
-                          //   buttonClicked
-                          //     ? productCategory
-                          //     : currentProduct?.category
-                          // }
-                          value={productCategory}
-                          placeholder="Category"
-                          onChange={(e) => setcategory(e.target.value)}
-                        />
+                        <div className="btn-group category">
+                          <button
+                            type="button"
+                            class="btn  dropdown-toggle buttons text-white"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            {dropCategory}
+                          </button>
+                          <ul className="dropdown-menu">
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                href="#"
+                                onClick={() => {
+                                  setcategory("men's clothing");
+                                  setdropCategory("Men's Clothing");
+                                }}
+                              >
+                                Men's Clothing
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                href="#"
+                                onClick={() => {
+                                  setcategory("jewelery");
+                                  setdropCategory("Jewelery");
+                                }}
+                              >
+                                Jewelery
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                href="#"
+                                onClick={() => {
+                                  setcategory("electronics");
+                                  setdropCategory("Electronics");
+                                }}
+                              >
+                                Electronics
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                href="#"
+                                onClick={() => {
+                                  setcategory("women's clothing");
+                                  setdropCategory("Women's Clothing");
+                                }}
+                              >
+                                Women's Clothing
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                       <div className="col-md-6">
                         <label for="rating" className="form-label">
                           Rating
                         </label>
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
                           id="rating"
                           name="rating"
-                          // defaultValue={
-                          //   buttonClicked
-                          //     ? productRating
-                          //     : currentProduct?.rating?.rate
-                          // }
+                          min={0}
+                          max={5}
                           value={productRating}
                           placeholder="Rating"
                           onChange={(e) => setrating(e.target.value)}
+                          required
+                          autoComplete="off"
                         />
                       </div>
                       <div className="col-md-6">
                         {buttonClicked ? (
                           <>
-                            <label for="rating" className="form-label">
-                              Rating
+                            <label for="productImage" className="form-label">
+                              Image
                             </label>
                             <input
-                              type="text"
+                              type="url"
                               className="form-control"
-                              id="rating"
-                              name="rating"
+                              id="productImage"
+                              name="productImage"
                               placeholder="Image URL"
+                              value={productImage}
                               onChange={(e) => setimage(e.target.value)}
+                              required
+                              autoComplete="off"
                             />
                           </>
                         ) : (
-                          <img
-                            src={currentProduct?.image}
-                            alt=""
-                            style={{ height: "150px", width: "150px" }}
-                          />
+                          <>
+                            <img
+                              src={productImage}
+                              alt=""
+                              style={{ height: "150px", width: "150px" }}
+                            />
+                            <label for="productImage" className="form-label">
+                              Image
+                            </label>
+                            <input
+                              type="url"
+                              className="form-control"
+                              id="productImage"
+                              name="productImage"
+                              placeholder="Image URL"
+                              value={productImage}
+                              onChange={(e) => setimage(e.target.value)}
+                            />
+                          </>
                         )}
                       </div>
                       <div className="form-floating">
@@ -438,48 +467,139 @@ function Crud() {
                           id="description"
                           name="description"
                           style={{ height: "100px" }}
-                          // defaultValue={
-                          //   buttonClicked
-                          //     ? productDescription
-                          //     : currentProduct?.description
-                          // }
                           value={productDescription}
                           onChange={(e) => setdescription(e.target.value)}
+                          required
+                          autoComplete="off"
                         ></textarea>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                          onClick={() => setdropCategory("Set-Category")}
+                        >
+                          Close
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          data-bs-dismiss="modal"
+                          onClick={() =>
+                            buttonClicked
+                              ? addProduct()
+                              : updateProduct(currentProduct?.id)
+                          }
+                        >
+                          {buttonClicked ? "Add Product" : "Update Product"}{" "}
+                        </button>
                       </div>
                     </form>
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
+                </div>
+              </div>
+            </div>
 
+            <div
+              class="modal fade"
+              id="deleteModal"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content text-primary">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      Confirm
+                    </h5>
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      class="btn-close"
                       data-bs-dismiss="modal"
-                      onClick={() =>
-                        buttonClicked
-                          ? addProduct()
-                          : updateProduct(currentProduct?.id)
-                      }
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    Do you want to delete this product?
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
                     >
-                      {buttonClicked ? "Add Product" : "Update Product"}{" "}
+                      No
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-bs-dismiss="modal"
+                      onClick={deleteProduct}
+                    >
+                      Yes
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="card-container">
+            <div
+              class="modal fade"
+              id="productInfoModal"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog ">
+                <div class="modal-content text-dark productInfoModal">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      {productTitle}
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body row">
+                    <div className="product-image col-md-6">
+                      <img
+                        src={productImage}
+                        alt=""
+                        height={"200px"}
+                        width={"200px"}
+                      />
+                    </div>
+                    <div className="product-info col-md-6 pt-3">
+                      <h6>Product ID: {productId}</h6>
+                      <h6>Product Price: {productPrice}</h6>
+                      <h6>Product Category: {productCategory}</h6>
+                      <h6>Product Rating: {productRating}</h6>
+                    </div>
+                    <h6 className="pt-3">Product Description: </h6>{" "}
+                    <span>{productDescription}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card-container py-5">
               {product.map((prod, index) =>
                 index < productDisplay ? (
                   <>
-                    <div className="card" key={index}>
+                    <div
+                      className="card"
+                      type="button"
+                      key={index}
+                      data-bs-toggle="modal"
+                      data-bs-target="#productInfoModal"
+                      onClick={() => productInfo(prod)}
+                    >
                       <div className="imgBx">
                         <img src={prod.image} alt="" />
                       </div>
@@ -488,16 +608,20 @@ function Crud() {
 
                         <button
                           type="button"
-                          class="btn btn-info"
+                          class="btn btn-info text-white"
                           data-bs-toggle="modal"
                           data-bs-target="#exampleModal"
                           onClick={() => handleClick(prod)}
                         >
                           Update
                         </button>
+
                         <button
-                          className="btn btn-danger"
-                          onClick={() => deleteProduct(prod.id)}
+                          type="button"
+                          class="btn btn-danger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                          onClick={() => handleDelete(prod.id)}
                         >
                           Delete
                         </button>
@@ -508,15 +632,15 @@ function Crud() {
                   ""
                 )
               )}
-              <FadeLoader
-                color={"#264653"}
-                loading={loading}
-                cssOverride={override}
-                size={100}
-                aria-label="Loading Spinner"
-                data-testid="loader"
-              />
             </div>
+            <FadeLoader
+              color={"#264653"}
+              loading={loading}
+              cssOverride={override}
+              size={100}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
           </div>
         </div>
       </div>
