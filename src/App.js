@@ -4,7 +4,6 @@ import Crud from "./CRUD/Crud";
 import ClipLoader from "react-spinners/ClipLoader";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./Component/Navbar";
-import PageScrollInfinite from "./Component/PageScrollInfinite";
 
 function App() {
   const [loading, setloading] = useState(false);
@@ -42,10 +41,6 @@ function App() {
           <>
             <Navbar setnavproduct={setnavproduct} />
             <Routes>
-              <Route
-                path="/product-infinite-loading"
-                element={<PageScrollInfinite />}
-              />
               <Route path="/" element={<Crud navproduct={navproduct} />} />
             </Routes>
           </>
