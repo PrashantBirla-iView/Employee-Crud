@@ -13,16 +13,31 @@
 }
 
 .nav {
-  color: #fff;
+  color: #000;
   height: fit-content;
   background: #fff;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: end;
+  font-weight: 700;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: rgba(38, 70, 83, 0.85) !important;
+}
+
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .show > .nav-link {
+  color: #264653 !important;
 }
 
 .buttons {
   background: #264653;
 }
 
-.nav .image {
+.image {
   width: 100px;
   height: 100px;
   /* mix-blend-mode: hard-light; */
@@ -125,7 +140,7 @@
   padding-top: 2rem;
 }
 
-#productInfoModal{
+#productInfoModal {
   width: 100vw;
 }
 

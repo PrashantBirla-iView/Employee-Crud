@@ -4,11 +4,10 @@ import Crud from "./CRUD/Crud";
 import ClipLoader from "react-spinners/ClipLoader";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./Component/Navbar";
+import Login from "./Component/Login/Login";
 
 function App() {
   const [loading, setloading] = useState(false);
-  const [navproduct, setnavproduct] = useState("");
-
   const override = {
     position: "absolute",
     left: "0",
@@ -33,15 +32,16 @@ function App() {
             color={"#36d7b7"}
             loading={loading}
             cssOverride={override}
-            size={100}
+            size={70}
             aria-label="Loading Spinner"
             data-testid="loader"
           />
         ) : (
           <>
-            <Navbar setnavproduct={setnavproduct} />
+            <Navbar />
             <Routes>
-              <Route path="/" element={<Crud navproduct={navproduct} />} />
+              <Route path="/" element={<Crud />} />
+              <Route path="/Login" element={<Login />} />
             </Routes>
           </>
         )}
