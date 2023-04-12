@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "../CRUD/Card.css";
 import axios from "axios";
-import FadeLoader from "react-spinners/FadeLoader";
+import ClipLoader from "react-spinners/ClipLoader";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
-  productId: Yup.string().required("Product ID is required"),
-  productTitle: Yup.string().required("Title is required"),
-  productPrice: Yup.string().required("Price is required"),
-  productCategory: Yup.string().required("Select a category from dropdown"),
-  productRating: Yup.string().required("Rating is required"),
-  productImage: Yup.string().required("Enter url for the image"),
-  productDescription: Yup.string().required("Product description is required"),
+  id: Yup.string().required("Product ID is required"),
+  title: Yup.string().required("Title is required"),
+  price: Yup.string().required("Price is required"),
+  category: Yup.string().required("Select a category from dropdown"),
+  rating: Yup.string().required("Rating is required"),
+  image: Yup.string().required("Enter url for the image"),
+  description: Yup.string().required("Product description is required"),
 });
 
 function Crud() {
@@ -32,12 +32,13 @@ function Crud() {
   const [loading, setloading] = useState(false);
   const [scrollBar, setscrollBar] = useState(100);
   const [productUpdated, setproductUpdated] = useState(false);
+  const [currentErrors, setCurrentErrors] = useState([]);
   let productID;
 
   const override = {
     position: "fixed",
     left: "0",
-    top: "0%",
+    top: "90%",
     right: "0",
     bottom: "0",
     margin: "auto",
@@ -87,6 +88,7 @@ function Crud() {
   const handleClick = (prod) => {
     setbuttonClicked(false);
     console.log("handleClick", buttonClicked);
+    setCurrentErrors([]);
     setCurrentProduct(prod);
     setid(prod?.id);
     settitle(prod?.title);
@@ -101,6 +103,8 @@ function Crud() {
   };
 
   const updateProduct = async (id) => {
+    console.log("ID", id);
+    // setproductUpdated(true);
     const updatedProduct = await axios.put(`http://localhost:3004/data/${id}`, {
       id: productId,
       title: productTitle,
@@ -112,9 +116,10 @@ function Crud() {
     });
     // console.log("Update Product Button", buttonClicked);
     setProduct((prev) => [...prev, updatedProduct]);
+    console.log(product);
+    fetchData();
     // setbuttonClicked(true);
-    setproductUpdated(true);
-    alert("Product Updated Successfully!!");
+    // alert("Product Updated Successfully!!");
   };
 
   const Sort = async (category, categoryName) => {
@@ -147,7 +152,9 @@ function Crud() {
     });
     // console.log("Add Product Button", buttonClicked);
     setProduct((prev) => [...prev, newProduct]);
-    alert("Product Added Successfully!!");
+    // alert("Product Added Successfully!!");
+    // fetchData();
+    // return;
   };
 
   const handleAddProduct = () => {
@@ -173,6 +180,35 @@ function Crud() {
     setrating(productINFO?.rating?.rate);
     setimage(productINFO?.image);
     setdescription(productINFO?.description);
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    console.log("Add Button Clicked", buttonClicked);
+    const data = {
+      id: productId,
+      title: productTitle,
+      price: productPrice,
+      category: productCategory,
+      rating: productRating,
+      image: productImage,
+      description: productDescription,
+    };
+
+    validationSchema
+      .validate(data, { abortEarly: false })
+      .then((valid) => {
+        buttonClicked ? addProduct() : updateProduct(currentProduct?.id);
+        console.log("Form is Valid", valid);
+        setCurrentErrors([]);
+      })
+      .catch((err) => {
+        const errors = {};
+        err.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setCurrentErrors(errors);
+      });
   };
 
   return (
@@ -267,7 +303,9 @@ function Crud() {
             <div
               className="modal fade"
               id="exampleModal"
-              tabindex="-1"
+              // data-bs-backdrop="static"
+              // data-bs-keyboard="false"
+              tabIndex="-1"
               aria-labelledby="exampleModalLabel"
               aria-hidden="true"
             >
@@ -289,9 +327,9 @@ function Crud() {
                     ></button>
                   </div>
                   <div className="modal-body ">
-                    <form className="row g-3">
+                    <form className="row g-3" onSubmit={handleFormSubmit}>
                       <div className="col-md-6">
-                        <label for="productId" className="form-label">
+                        <label htmlFor="productId" className="form-label">
                           ID
                         </label>
                         <input
@@ -303,12 +341,15 @@ function Crud() {
                           value={productId}
                           placeholder="Product ID"
                           onChange={(e) => setid(e.target.value)}
-                          required
+                          // required
                           autoComplete="off"
                         />
+                        {currentErrors.id && (
+                          <div style={{ color: "red" }}>{currentErrors.id}</div>
+                        )}
                       </div>
                       <div className="col-md-6">
-                        <label for="productTitle" className="form-label">
+                        <label htmlFor="productTitle" className="form-label">
                           Title
                         </label>
                         <input
@@ -319,12 +360,17 @@ function Crud() {
                           value={productTitle}
                           placeholder="Product Title"
                           onChange={(e) => settitle(e.target.value)}
-                          required
+                          // required
                           autoComplete="off"
                         />
+                        {currentErrors.title && (
+                          <div style={{ color: "red" }}>
+                            {currentErrors.title}
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-6">
-                        <label for="productPrice" className="form-label">
+                        <label htmlFor="productPrice" className="form-label">
                           Price
                         </label>
                         <input
@@ -336,9 +382,14 @@ function Crud() {
                           min={0}
                           placeholder="Price"
                           onChange={(e) => setprice(e.target.value)}
-                          required
+                          // required
                           autoComplete="off"
                         />
+                        {currentErrors.price && (
+                          <div style={{ color: "red" }}>
+                            {currentErrors.price}
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-6">
                         <div className="btn-group category">
@@ -401,9 +452,14 @@ function Crud() {
                             </li>
                           </ul>
                         </div>
+                        {currentErrors.category && (
+                          <div style={{ color: "red" }}>
+                            {currentErrors.category}
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-6">
-                        <label for="rating" className="form-label">
+                        <label htmlFor="rating" className="form-label">
                           Rating
                         </label>
                         <input
@@ -416,14 +472,23 @@ function Crud() {
                           value={productRating}
                           placeholder="Rating"
                           onChange={(e) => setrating(e.target.value)}
-                          required
+                          // required
                           autoComplete="off"
+                          step=".01"
                         />
+                        {currentErrors.rating && (
+                          <div style={{ color: "red" }}>
+                            {currentErrors.rating}
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-6">
                         {buttonClicked ? (
                           <>
-                            <label for="productImage" className="form-label">
+                            <label
+                              htmlFor="productImage"
+                              className="form-label"
+                            >
                               Image
                             </label>
                             <input
@@ -434,9 +499,14 @@ function Crud() {
                               placeholder="Image URL"
                               value={productImage}
                               onChange={(e) => setimage(e.target.value)}
-                              required
+                              // required
                               autoComplete="off"
                             />
+                            {currentErrors.image && (
+                              <div style={{ color: "red" }}>
+                                {currentErrors.image}
+                              </div>
+                            )}
                           </>
                         ) : (
                           <>
@@ -445,7 +515,10 @@ function Crud() {
                               alt=""
                               style={{ height: "150px", width: "150px" }}
                             />
-                            <label for="productImage" className="form-label">
+                            <label
+                              htmlFor="productImage"
+                              className="form-label"
+                            >
                               Image
                             </label>
                             <input
@@ -457,6 +530,11 @@ function Crud() {
                               value={productImage}
                               onChange={(e) => setimage(e.target.value)}
                             />
+                            {currentErrors.image && (
+                              <div style={{ color: "red" }}>
+                                {currentErrors.image}
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
@@ -469,9 +547,14 @@ function Crud() {
                           style={{ height: "100px" }}
                           value={productDescription}
                           onChange={(e) => setdescription(e.target.value)}
-                          required
+                          // required
                           autoComplete="off"
                         ></textarea>
+                        {currentErrors.description && (
+                          <div style={{ color: "red" }}>
+                            {currentErrors.description}
+                          </div>
+                        )}
                       </div>
                       <div className="modal-footer">
                         <button
@@ -484,14 +567,10 @@ function Crud() {
                         </button>
 
                         <button
-                          type="button"
+                          type="submit"
                           className="btn btn-primary"
-                          data-bs-dismiss="modal"
-                          onClick={() =>
-                            buttonClicked
-                              ? addProduct()
-                              : updateProduct(currentProduct?.id)
-                          }
+                          // data-bs-dismiss="modal"
+                          // onClick={() => updateProduct(currentProduct?.id)}
                         >
                           {buttonClicked ? "Add Product" : "Update Product"}{" "}
                         </button>
@@ -505,7 +584,7 @@ function Crud() {
             <div
               class="modal fade"
               id="deleteModal"
-              tabindex="-1"
+              tabIndex="-1"
               aria-labelledby="exampleModalLabel"
               aria-hidden="true"
             >
@@ -549,7 +628,7 @@ function Crud() {
             <div
               class="modal fade"
               id="productInfoModal"
-              tabindex="-1"
+              tabIndex="-1"
               aria-labelledby="exampleModalLabel"
               aria-hidden="true"
             >
@@ -598,9 +677,8 @@ function Crud() {
                       key={index}
                       data-bs-toggle="modal"
                       data-bs-target="#productInfoModal"
-                      onClick={() => productInfo(prod)}
                     >
-                      <div className="imgBx">
+                      <div className="imgBx" onClick={() => productInfo(prod)}>
                         <img src={prod.image} alt="" />
                       </div>
                       <div className="action-buttons">
@@ -633,11 +711,11 @@ function Crud() {
                 )
               )}
             </div>
-            <FadeLoader
+            <ClipLoader
               color={"#264653"}
               loading={loading}
               cssOverride={override}
-              size={100}
+              size={50}
               aria-label="Loading Spinner"
               data-testid="loader"
             />
