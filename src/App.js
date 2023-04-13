@@ -5,9 +5,13 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./Component/Navbar";
 import Login from "./Component/Login/Login";
+import Signup from "./Component/Signup/Signup";
+import Home from "./pages/Home/Home";
 
 function App() {
   const [loading, setloading] = useState(false);
+  const isLoggedIn = !!localStorage.getItem("email");
+
   const override = {
     position: "absolute",
     left: "0",
@@ -40,8 +44,10 @@ function App() {
           <>
             <Navbar />
             <Routes>
-              <Route path="/" element={<Crud />} />
+              <Route path="/Product" element={<Crud />} />
+              <Route path="/" element={<Home />} />
               <Route path="/Login" element={<Login />} />
+              <Route path="/Signup" element={<Signup />} />
             </Routes>
           </>
         )}

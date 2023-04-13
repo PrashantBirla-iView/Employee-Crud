@@ -130,11 +130,7 @@ function Crud() {
   };
 
   const sortProductList = (sortProd) => {
-    let descending = [];
-    let ascending = [];
-    descending = [...product].sort((a, b) => b.id - a.id);
-    ascending = [...product].sort((a, b) => a.id - b.id);
-    sort ? setProduct(descending) : setProduct(ascending);
+    sort ? setProduct(product.reverse()) : setProduct(product.reverse());
     setSort(!sort);
   };
 
@@ -159,6 +155,7 @@ function Crud() {
 
   const handleAddProduct = () => {
     setbuttonClicked(true);
+    setCurrentErrors([]);
     setid("");
     settitle("");
     setprice("");

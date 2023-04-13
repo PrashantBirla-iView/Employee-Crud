@@ -12,9 +12,9 @@
   background: #f6f6f7;
 }
 
-.nav {
+.navbar {
   color: #000;
-  height: fit-content;
+  height: 70px;
   background: #fff;
 }
 
@@ -24,12 +24,12 @@
   font-weight: 700;
 }
 
-.navbar-light .navbar-nav .nav-link {
+.navbar-light .nav-link {
   color: rgba(38, 70, 83, 0.85) !important;
 }
 
-.navbar-light .navbar-nav .nav-link.active,
-.navbar-light .navbar-nav .show > .nav-link {
+.navbar-light .nav-link.active,
+.navbar-light .show > .nav-link {
   color: #264653 !important;
 }
 

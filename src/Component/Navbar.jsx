@@ -1,8 +1,16 @@
 import React from "react";
 import image from "../Component/logo.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const isLoggedIn = !!localStorage.getItem("email");
+  const history = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    history("/");
+  };
+
   return (
     <div className="container">
       <div className="row">
@@ -23,18 +31,25 @@ function Navbar() {
               <span className="navbar-toggler-icon"></span>
             </button>
             <div className="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul className="navbar-nav">
-                <li className="nav-item">
+              {isLoggedIn ? (
+                <NavLink
+                  className="nav-link"
+                  aria-current="page"
+                  to="/"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </NavLink>
+              ) : (
+                <>
                   <NavLink className="nav-link" aria-current="page" to="/Login">
                     Login
                   </NavLink>
-                </li>
-                <li className="nav-item">
                   <NavLink className="nav-link" to="/Signup">
                     Signup
                   </NavLink>
-                </li>
-              </ul>
+                </>
+              )}
             </div>
           </div>
         </nav>

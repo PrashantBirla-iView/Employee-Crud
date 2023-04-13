@@ -1,0 +1,12 @@
+.home-page {
+  width: 100%;
+  height: calc(100vh - 56px);
+  /* height: 100vh; */
+  background-image: url("https://websitedemos.net/book-store-02/wp-content/uploads/sites/834/2021/04/book-store-hero-bg-img.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0;
+  z-index: -9999;
+  color: black !important;
+  font-family: "EB Garamond", serif;
+}
