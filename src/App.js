@@ -7,6 +7,7 @@ import Navbar from "./Component/Navbar";
 import Login from "./Component/Login/Login";
 import Signup from "./Component/Signup/Signup";
 import Home from "./pages/Home/Home";
+import Footer from "./Component/Footer/Footer";
 
 function App() {
   const [loading, setloading] = useState(false);
@@ -49,6 +50,7 @@ function App() {
               <Route path="/Login" element={<Login />} />
               <Route path="/Signup" element={<Signup />} />
             </Routes>
+            <Footer />
           </>
         )}
       </BrowserRouter>

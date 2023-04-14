@@ -36,9 +36,9 @@ function Crud() {
   let productID;
 
   const override = {
-    position: "fixed",
+    position: "absolute",
     left: "0",
-    top: "90%",
+    top: "70%",
     right: "0",
     bottom: "0",
     margin: "auto",
