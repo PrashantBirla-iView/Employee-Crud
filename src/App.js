@@ -3,7 +3,7 @@ import "./App.css";
 import Crud from "./CRUD/Crud";
 import ClipLoader from "react-spinners/ClipLoader";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./Component/Navbar";
+import Navbar from "./Component/Navbar/Navbar";
 import Login from "./Component/Login/Login";
 import Signup from "./Component/Signup/Signup";
 import Home from "./pages/Home/Home";
