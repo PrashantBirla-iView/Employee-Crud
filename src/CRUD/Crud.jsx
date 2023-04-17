@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "../CRUD/Card.css";
+import "../CRUD/Crud.css";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 const validationSchema = Yup.object().shape({
   id: Yup.string().required("Product ID is required"),
@@ -36,8 +37,8 @@ function Crud() {
   let productID;
 
   const override = {
-    position: "absolute",
-    left: "0",
+    position: "sticky",
+    left: "50%",
     top: "70%",
     right: "0",
     bottom: "0",
@@ -116,6 +117,9 @@ function Crud() {
     });
     // console.log("Update Product Button", buttonClicked);
     setProduct((prev) => [...prev, updatedProduct]);
+    toast.success("Product Updated Successfully", {
+      style: { fontSize: "14px" },
+    });
     console.log(product);
     fetchData();
     // setbuttonClicked(true);
@@ -148,6 +152,9 @@ function Crud() {
     });
     // console.log("Add Product Button", buttonClicked);
     setProduct((prev) => [...prev, newProduct]);
+    toast.success("Product Added Successfully", {
+      style: { fontSize: "14px" },
+    });
     // alert("Product Added Successfully!!");
     // fetchData();
     // return;
@@ -213,7 +220,7 @@ function Crud() {
       <div className="container">
         <div className="row">
           <div className="product-table">
-            <div className="btn btn-group mt-5 d-flex align-item-center justify-content-end">
+            <div className="btn btn-group mt-5 d-flex align-item-center justify-content-end filters">
               <div className="btn-group category">
                 <button
                   type="button"
@@ -326,9 +333,6 @@ function Crud() {
                   <div className="modal-body ">
                     <form className="row g-3" onSubmit={handleFormSubmit}>
                       <div className="col-md-6">
-                        <label htmlFor="productId" className="form-label">
-                          ID
-                        </label>
                         <input
                           type="number"
                           className="form-control"
@@ -342,13 +346,12 @@ function Crud() {
                           autoComplete="off"
                         />
                         {currentErrors.id && (
-                          <div style={{ color: "red" }}>{currentErrors.id}</div>
+                          <span style={{ color: "red" }}>
+                            {currentErrors.id}
+                          </span>
                         )}
                       </div>
                       <div className="col-md-6">
-                        <label htmlFor="productTitle" className="form-label">
-                          Title
-                        </label>
                         <input
                           type="text"
                           className="form-control"
@@ -361,15 +364,12 @@ function Crud() {
                           autoComplete="off"
                         />
                         {currentErrors.title && (
-                          <div style={{ color: "red" }}>
+                          <span style={{ color: "red" }}>
                             {currentErrors.title}
-                          </div>
+                          </span>
                         )}
                       </div>
                       <div className="col-md-6">
-                        <label htmlFor="productPrice" className="form-label">
-                          Price
-                        </label>
                         <input
                           type="number"
                           className="form-control"
@@ -381,11 +381,12 @@ function Crud() {
                           onChange={(e) => setprice(e.target.value)}
                           // required
                           autoComplete="off"
+                          step={0.01}
                         />
                         {currentErrors.price && (
-                          <div style={{ color: "red" }}>
+                          <span style={{ color: "red" }}>
                             {currentErrors.price}
-                          </div>
+                          </span>
                         )}
                       </div>
                       <div className="col-md-6">
@@ -456,9 +457,6 @@ function Crud() {
                         )}
                       </div>
                       <div className="col-md-6">
-                        <label htmlFor="rating" className="form-label">
-                          Rating
-                        </label>
                         <input
                           type="number"
                           className="form-control"
@@ -474,20 +472,14 @@ function Crud() {
                           step=".01"
                         />
                         {currentErrors.rating && (
-                          <div style={{ color: "red" }}>
+                          <span style={{ color: "red" }}>
                             {currentErrors.rating}
-                          </div>
+                          </span>
                         )}
                       </div>
                       <div className="col-md-6">
                         {buttonClicked ? (
                           <>
-                            <label
-                              htmlFor="productImage"
-                              className="form-label"
-                            >
-                              Image
-                            </label>
                             <input
                               type="url"
                               className="form-control"
@@ -500,9 +492,9 @@ function Crud() {
                               autoComplete="off"
                             />
                             {currentErrors.image && (
-                              <div style={{ color: "red" }}>
+                              <span style={{ color: "red" }}>
                                 {currentErrors.image}
-                              </div>
+                              </span>
                             )}
                           </>
                         ) : (
@@ -512,12 +504,6 @@ function Crud() {
                               alt=""
                               style={{ height: "150px", width: "150px" }}
                             />
-                            <label
-                              htmlFor="productImage"
-                              className="form-label"
-                            >
-                              Image
-                            </label>
                             <input
                               type="url"
                               className="form-control"
@@ -528,9 +514,9 @@ function Crud() {
                               onChange={(e) => setimage(e.target.value)}
                             />
                             {currentErrors.image && (
-                              <div style={{ color: "red" }}>
+                              <span style={{ color: "red" }}>
                                 {currentErrors.image}
-                              </div>
+                              </span>
                             )}
                           </>
                         )}
@@ -548,9 +534,9 @@ function Crud() {
                           autoComplete="off"
                         ></textarea>
                         {currentErrors.description && (
-                          <div style={{ color: "red" }}>
+                          <span style={{ color: "red" }}>
                             {currentErrors.description}
-                          </div>
+                          </span>
                         )}
                       </div>
                       <div className="modal-footer">

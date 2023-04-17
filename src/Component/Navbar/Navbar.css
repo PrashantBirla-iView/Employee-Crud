@@ -1,0 +1,32 @@
+.navbar {
+  color: #000;
+  height: 70px;
+  background: #fff;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: end;
+  font-weight: 700;
+}
+
+.navbar-light .nav-link {
+  color: rgba(38, 70, 83, 0.85) !important;
+}
+
+.navbar-light .nav-link.active,
+.navbar-light .show > .nav-link {
+  color: #264653 !important;
+}
+
+.image {
+  width: 100px;
+  height: 100px;
+  /* mix-blend-mode: hard-light; */
+}
+
+@media only screen and (max-width: 769px) {
+  .navbar {
+    height: fit-content;
+  }
+}

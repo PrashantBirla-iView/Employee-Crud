@@ -3,6 +3,7 @@ import "../Login/Login.css";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const validateLogin = Yup.object().shape({
   email: Yup.string()
@@ -18,6 +19,7 @@ function Login() {
   const [userPassword, setuserPassword] = useState("");
   const [currentErrors, setCurrentErrors] = useState([]);
   const [userData, setUserData] = useState([]);
+  const [userNotExist, setUserNotExist] = useState(false);
 
   const history = useNavigate();
 
@@ -25,12 +27,35 @@ function Login() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    userData.find((user) => {
+      if (user.email !== userEmail) {
+        setUserNotExist(true);
+      } else {
+        setUserNotExist(false);
+      }
+      return;
+    });
+    validateLogin
+      .validate(
+        { email: userEmail, password: userPassword },
+        { abortEarly: false }
+      )
+      .catch((err) => {
+        const errors = {};
+        err.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setCurrentErrors(errors);
+      });
+  }, [userEmail, userPassword]);
+
   const fetchData = async () => {
     const result = await axios.get("http://localhost:3005/user");
     setUserData(result.data);
   };
 
-  console.log("User data", userData);
+  // console.log("User data", userData);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -46,6 +71,9 @@ function Login() {
             localStorage.setItem("email", user.email);
             localStorage.setItem("password", user.password);
             history("/Product");
+            toast.success(`Welcome ${user.name}`, {
+              style: { fontSize: "14px" },
+            });
           }
         });
       })
@@ -78,6 +106,9 @@ function Login() {
               />
               {currentErrors.email && (
                 <div style={{ color: "red" }}>{currentErrors.email}</div>
+              )}
+              {userNotExist && (
+                <div style={{ color: "red" }}>*User is not exist</div>
               )}
             </fieldset>
             <fieldset>

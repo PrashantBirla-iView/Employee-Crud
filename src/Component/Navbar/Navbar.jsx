@@ -1,6 +1,8 @@
 import React from "react";
-import image from "../Component/logo.png";
+import image from "../Navbar/logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
+import "../Navbar/Navbar.css";
+import { toast } from "react-toastify";
 
 function Navbar() {
   const isLoggedIn = !!localStorage.getItem("email");
@@ -9,6 +11,9 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.clear();
     history("/");
+    toast.success("Logout Successfully", {
+      style: { fontSize: "14px" },
+    });
   };
 
   return (

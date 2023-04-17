@@ -19,7 +19,7 @@ function Home() {
                 </div>
                 <div className="tagline">
                   <h1>
-                    <b>Style up your wardrobe with Wardrobe.</b>
+                    <b>Style up your wardrobe with WARDROBE</b>
                   </h1>
                 </div>
                 <div className="image2">

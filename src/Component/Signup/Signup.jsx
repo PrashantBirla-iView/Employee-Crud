@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../Signup/Signup.css";
 import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("*Name is required"),
@@ -24,8 +26,48 @@ function Signup() {
   const [confirmUserPassword, setconfirmUserPassword] = useState("");
   const [currentErrors, setCurrentErrors] = useState([]);
   const [userData, setuserData] = useState([]);
+  const [isUserExist, setIsUserExist] = useState(false);
+  const [existingUsers, setexistingUsers] = useState([]);
 
   const history = useNavigate();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const result = await axios.get("http://localhost:3005/user");
+    setexistingUsers(result.data);
+  };
+
+  useEffect(() => {
+    existingUsers.find((user) => {
+      if (user.email === userEmail) {
+        setIsUserExist(true);
+      } else {
+        setIsUserExist(false);
+      }
+      return;
+    });
+    validationSchema
+      .validate(
+        {
+          name: userName,
+          email: userEmail,
+          password: userPassword,
+          confirmPassword: confirmUserPassword,
+        },
+        { abortEarly: false }
+      )
+      .catch((err) => {
+        const errors = {};
+        err.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setCurrentErrors(errors);
+      });
+    return;
+  }, [userName, userEmail, userPassword, confirmUserPassword]);
 
   const handleSignUp = (e) => {
     e.preventDefault();
@@ -48,10 +90,14 @@ function Signup() {
           email: userEmail,
           password: userPassword,
         });
+
         setuserData((prev) => [...prev, newUser]);
+        localStorage.setItem("User name", userName);
         history("/Login");
+        toast.success("Signup Successfull!!", {
+          style: { fontSize: "14px" },
+        });
         // setuserData(valid);
-        // console.log("User Data", userData);
       })
       .catch((err) => {
         const errors = {};
@@ -81,7 +127,7 @@ function Signup() {
                 onChange={(e) => setuserName(e.target.value)}
               />
               {currentErrors.name && (
-                <div style={{ color: "red" }}>{currentErrors.name}</div>
+                <span style={{ color: "red" }}>{currentErrors.name}</span>
               )}
             </fieldset>
             <fieldset>
@@ -93,7 +139,10 @@ function Signup() {
                 onChange={(e) => setuserEmail(e.target.value)}
               />
               {currentErrors.email && (
-                <div style={{ color: "red" }}>{currentErrors.email}</div>
+                <span style={{ color: "red" }}>{currentErrors.email}</span>
+              )}
+              {isUserExist && (
+                <span style={{ color: "red" }}>*User Already Exist.</span>
               )}
             </fieldset>
             <fieldset>
@@ -105,7 +154,7 @@ function Signup() {
                 onChange={(e) => setuserPassword(e.target.value)}
               />
               {currentErrors.password && (
-                <div style={{ color: "red" }}>{currentErrors.password}</div>
+                <span style={{ color: "red" }}>{currentErrors.password}</span>
               )}
             </fieldset>
             <fieldset>
@@ -117,9 +166,9 @@ function Signup() {
                 onChange={(e) => setconfirmUserPassword(e.target.value)}
               />
               {currentErrors.confirmPassword && (
-                <div style={{ color: "red" }}>
+                <span style={{ color: "red" }}>
                   {currentErrors.confirmPassword}
-                </div>
+                </span>
               )}
             </fieldset>
           </div>
