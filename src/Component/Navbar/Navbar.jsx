@@ -37,14 +37,26 @@ function Navbar() {
             </button>
             <div className="collapse navbar-collapse" id="navbarNavDropdown">
               {isLoggedIn ? (
-                <NavLink
-                  className="nav-link"
-                  aria-current="page"
-                  to="/"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </NavLink>
+                <>
+                  <NavLink className="nav-link" aria-current="page" to="/">
+                    Home
+                  </NavLink>
+                  <NavLink
+                    className="nav-link"
+                    aria-current="page"
+                    to="/Product"
+                  >
+                    Product
+                  </NavLink>
+                  <NavLink
+                    className="nav-link"
+                    aria-current="page"
+                    to="/"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </NavLink>
+                </>
               ) : (
                 <>
                   <NavLink className="nav-link" aria-current="page" to="/Login">
