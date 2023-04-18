@@ -12,7 +12,7 @@ const validationSchema = Yup.object().shape({
   category: Yup.string().required("Select a category from dropdown"),
   rating: Yup.string().required("Rating is required"),
   image: Yup.string().required("Enter url for the image"),
-  description: Yup.string().required("Product description is required"),
+  description: Yup.string().required("description is required"),
 });
 
 function Crud() {
