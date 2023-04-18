@@ -4,6 +4,8 @@ import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { Rating } from "react-simple-star-rating";
 
 const validationSchema = Yup.object().shape({
   id: Yup.string().required("Product ID is required"),
@@ -25,16 +27,22 @@ function Crud() {
   const [productCategory, setcategory] = useState("");
   const [productDescription, setdescription] = useState("");
   const [productImage, setimage] = useState("");
-  const [productRating, setrating] = useState("");
+  const [productRating, setrating] = useState(0);
   const [productRatingCount, setproductRatingCount] = useState("");
   const [productId, setid] = useState("");
-  const [productDisplay, setproductDisplay] = useState(5);
+  const [productDisplay, setproductDisplay] = useState(8);
   const [buttonClicked, setbuttonClicked] = useState();
   const [loading, setloading] = useState(false);
   const [scrollBar, setscrollBar] = useState(100);
   const [productUpdated, setproductUpdated] = useState(false);
   const [currentErrors, setCurrentErrors] = useState([]);
   let productID;
+  const isLoggedIn = !!localStorage.getItem("email");
+  const history = useNavigate();
+
+  useEffect(() => {
+    isLoggedIn ? history("/Product") : history("/Login");
+  }, []);
 
   const override = {
     position: "sticky",
@@ -55,7 +63,7 @@ function Crud() {
       if (window.scrollY >= scrollBar) {
         setloading(true);
         setTimeout(() => {
-          setproductDisplay(productDisplay + 5);
+          setproductDisplay(productDisplay + 4);
           setloading(false);
         }, 1000);
         setscrollBar(
@@ -121,6 +129,8 @@ function Crud() {
       style: { fontSize: "14px" },
     });
     console.log(product);
+    let modal = document.getElementById("exampleModal");
+    modal.classList.add("data-bs-dismiss");
     fetchData();
     // setbuttonClicked(true);
     // alert("Product Updated Successfully!!");
@@ -150,20 +160,21 @@ function Crud() {
       image: productImage,
       rating: { rate: productRating, count: productRatingCount },
     });
-    // console.log("Add Product Button", buttonClicked);
     setProduct((prev) => [...prev, newProduct]);
     toast.success("Product Added Successfully", {
       style: { fontSize: "14px" },
     });
-    // alert("Product Added Successfully!!");
-    // fetchData();
-    // return;
+    let modal = document.getElementById("exampleModal");
+    modal.classList.add("data-bs-dismiss");
+    fetchData();
+    return;
   };
 
   const handleAddProduct = () => {
+    let len = product.slice(-1);
     setbuttonClicked(true);
     setCurrentErrors([]);
-    setid("");
+    setid(len[0].id + 1);
     settitle("");
     setprice("");
     setcategory("");
@@ -213,6 +224,10 @@ function Crud() {
         });
         setCurrentErrors(errors);
       });
+  };
+
+  const handleRating = (rate) => {
+    setrating(rate);
   };
 
   return (
@@ -341,7 +356,8 @@ function Crud() {
                           min={0}
                           value={productId}
                           placeholder="Product ID"
-                          onChange={(e) => setid(e.target.value)}
+                          disabled
+                          // onChange={(e) => setid(e.target.value)}
                           // required
                           autoComplete="off"
                         />
@@ -404,6 +420,7 @@ function Crud() {
                               <button
                                 className="dropdown-item"
                                 href="#"
+                                type="button"
                                 onClick={() => {
                                   setcategory("men's clothing");
                                   setdropCategory("Men's Clothing");
@@ -416,6 +433,7 @@ function Crud() {
                               <button
                                 className="dropdown-item"
                                 href="#"
+                                type="button"
                                 onClick={() => {
                                   setcategory("jewelery");
                                   setdropCategory("Jewelery");
@@ -428,6 +446,7 @@ function Crud() {
                               <button
                                 className="dropdown-item"
                                 href="#"
+                                type="button"
                                 onClick={() => {
                                   setcategory("electronics");
                                   setdropCategory("Electronics");
@@ -440,6 +459,7 @@ function Crud() {
                               <button
                                 className="dropdown-item"
                                 href="#"
+                                type="button"
                                 onClick={() => {
                                   setcategory("women's clothing");
                                   setdropCategory("Women's Clothing");
@@ -456,30 +476,31 @@ function Crud() {
                           </div>
                         )}
                       </div>
+
                       <div className="col-md-6">
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="rating"
-                          name="rating"
-                          min={0}
-                          max={5}
-                          value={productRating}
-                          placeholder="Rating"
-                          onChange={(e) => setrating(e.target.value)}
-                          // required
-                          autoComplete="off"
-                          step=".01"
+                        <Rating
+                          onClick={handleRating}
+                          size={20}
+                          label
+                          transition
+                          initialValue={productRating}
+                          fillColor="orange"
+                          emptyColor="gray"
                         />
                         {currentErrors.rating && (
-                          <span style={{ color: "red" }}>
+                          <div style={{ color: "red" }}>
                             {currentErrors.rating}
-                          </span>
+                          </div>
                         )}
                       </div>
                       <div className="col-md-6">
                         {buttonClicked ? (
                           <>
+                            <img
+                              src={productImage}
+                              alt=""
+                              style={{ height: "150px", width: "150px" }}
+                            />
                             <input
                               type="url"
                               className="form-control"
@@ -641,7 +662,21 @@ function Crud() {
                       <h6>Product ID: {productId}</h6>
                       <h6>Product Price: {productPrice}</h6>
                       <h6>Product Category: {productCategory}</h6>
-                      <h6>Product Rating: {productRating}</h6>
+                      <h6>
+                        Product Rating:{" "}
+                        <Rating
+                          onClick={handleRating}
+                          // ratingValue={productRating}
+                          size={20}
+                          label
+                          transition
+                          readonly
+                          initialValue={productRating}
+                          fillColor="orange"
+                          emptyColor="gray"
+                          className="foo" // Will remove the inline style if applied
+                        />
+                      </h6>
                     </div>
                     <h6 className="pt-3">Product Description: </h6>{" "}
                     <span>{productDescription}</span>

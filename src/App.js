@@ -11,7 +11,6 @@ import Footer from "./Component/Footer/Footer";
 
 function App() {
   const [loading, setloading] = useState(false);
-  const isLoggedIn = !!localStorage.getItem("email");
 
   const override = {
     position: "absolute",
