@@ -39,7 +39,7 @@ fieldset {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0 1rem 1rem;
+  padding: 1rem;
 }
 
 .login-btn:hover {
