@@ -1,0 +1,93 @@
+.home-page {
+  width: 100%;
+  height: calc(100vh - 320px);
+  /* height: 100vh; */
+  background-image: url("https://websitedemos.net/book-store-02/wp-content/uploads/sites/834/2021/04/book-store-hero-bg-img.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0;
+  z-index: -9999;
+  color: black !important;
+  font-family: "EB Garamond", serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-page h1 {
+  color: #264653d9;
+  position: relative;
+  margin: auto;
+}
+
+.home-page img,
+.section-2 img {
+  height: 400px;
+  /* width: 300px; */
+  mix-blend-mode: darken;
+}
+
+.home-page .tagline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  width: 500px;
+  text-align: center;
+}
+
+.image1,
+.section-2 .image1 {
+  position: absolute;
+  top: 20%;
+}
+
+.image2 {
+  display: flex;
+  justify-content: end;
+}
+
+.section-2 {
+  width: 100%;
+  height: calc(100vh - 56px);
+  background-image: url("https://websitedemos.net/book-store-02/wp-content/uploads/sites/834/2021/04/book-store-hero-bg-img.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: scaleX(-1);
+}
+
+.section-2 .image2 {
+  display: flex;
+  justify-content: center;
+}
+
+.section-2 .image3 {
+  position: absolute;
+  top: 20%;
+  left: 60%;
+}
+
+/* 1024px */
+
+@media only screen and (max-width: 1025px) {
+  .home-page img,
+  .section-2 img {
+    height: 300px;
+    /* width: 300px; */
+    mix-blend-mode: darken;
+  }
+  .home-page h1 {
+    font-size: 30px;
+  }
+
+  .image1 {
+    position: absolute;
+    top: 20%;
+  }
+
+  .image2 {
+    display: flex;
+    justify-content: end;
+  }
+}

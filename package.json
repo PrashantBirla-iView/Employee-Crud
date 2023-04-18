@@ -19,13 +19,15 @@
     "react-router-dom": "^6.10.0",
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.13.8",
+    "react-toastify": "^9.1.2",
     "web-vitals": "^2.1.4",
     "yup": "^1.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
-    "json-server": "json-server --watch db.json --port 3004",
-    "new": "concurrently \"npm start\" \"npm run json-server\"",
+    "json-server": "json-server --watch data/db.json --port 3004",
+    "json-server-user": "json-server --watch data/user.json --port 3005",
+    "new": "concurrently \"npm start\" \"npm run json-server\" \"npm run json-server-user\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

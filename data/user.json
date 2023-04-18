@@ -1,0 +1,16 @@
+{
+  "user": [
+    {
+      "name": "Prashant Birla",
+      "email": "prashant.birla@iviewlabs.net",
+      "password": "12345678",
+      "id": 1
+    },
+    {
+      "name": "Prashant Birla",
+      "email": "birlaprashant77@gmail.com",
+      "password": "12345678",
+      "id": 2
+    }
+  ]
+}
