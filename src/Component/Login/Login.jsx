@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useFormik } from "formik";
 
 const validateLogin = Yup.object().shape({
   email: Yup.string()
@@ -14,12 +15,13 @@ const validateLogin = Yup.object().shape({
     .min(8, "*Password must be atleast 8 letter long"),
 });
 
+const initialValues = {
+  email: "",
+  password: "",
+};
+
 function Login() {
-  const [userEmail, setuserEmail] = useState("");
-  const [userPassword, setuserPassword] = useState("");
-  const [currentErrors, setCurrentErrors] = useState([]);
   const [userData, setUserData] = useState([]);
-  const [userNotExist, setUserNotExist] = useState(false);
 
   const history = useNavigate();
 
@@ -27,47 +29,22 @@ function Login() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    userData.find((user) => {
-      if (user.email !== userEmail) {
-        setUserNotExist(true);
-      } else {
-        setUserNotExist(false);
-      }
-      return;
-    });
-    validateLogin
-      .validate(
-        { email: userEmail, password: userPassword },
-        { abortEarly: false }
-      )
-      .catch((err) => {
-        const errors = {};
-        err.inner.forEach((e) => {
-          errors[e.path] = e.message;
-        });
-        setCurrentErrors(errors);
-      });
-  }, [userEmail, userPassword]);
-
   const fetchData = async () => {
     const result = await axios.get("http://localhost:3005/user");
     setUserData(result.data);
   };
 
-  // console.log("User data", userData);
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    validateLogin
-      .validate(
-        { email: userEmail, password: userPassword },
-        { abortEarly: false }
-      )
-      .then((valid) => {
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: initialValues,
+      validationSchema: validateLogin,
+      onSubmit: (values) => {
+        console.log(values);
         userData.find((user) => {
-          if (user.email === userEmail && user.password === userPassword) {
+          if (
+            user.email === values.email &&
+            user.password === values.password
+          ) {
             localStorage.setItem("email", user.email);
             localStorage.setItem("password", user.password);
             history("/Product");
@@ -76,15 +53,8 @@ function Login() {
             });
           }
         });
-      })
-      .catch((err) => {
-        const errors = {};
-        err.inner.forEach((e) => {
-          errors[e.path] = e.message;
-        });
-        setCurrentErrors(errors);
-      });
-  };
+      },
+    });
 
   return (
     <div className="main-login">
@@ -94,7 +64,7 @@ function Login() {
             <b>Login</b>
           </h2>
         </div>
-        <form action="" className="form" onSubmit={handleLogin}>
+        <form action="" className="form" onSubmit={handleSubmit}>
           <div className="login-input">
             <fieldset>
               <input
@@ -102,14 +72,13 @@ function Login() {
                 name="email"
                 id="email"
                 placeholder="Email"
-                onChange={(e) => setuserEmail(e.target.value)}
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
-              {currentErrors.email && (
-                <div style={{ color: "red" }}>{currentErrors.email}</div>
-              )}
-              {userNotExist && (
-                <div style={{ color: "red" }}>*User is not exist</div>
-              )}
+              {errors.email && touched.email ? (
+                <span style={{ color: "red" }}>{errors.email}</span>
+              ) : null}
             </fieldset>
             <fieldset>
               <input
@@ -117,11 +86,13 @@ function Login() {
                 name="password"
                 id="password"
                 placeholder="Password"
-                onChange={(e) => setuserPassword(e.target.value)}
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
-              {currentErrors.password && (
-                <div style={{ color: "red" }}>{currentErrors.password}</div>
-              )}
+              {errors.password && touched.password ? (
+                <span style={{ color: "red" }}>{errors.password}</span>
+              ) : null}
             </fieldset>
           </div>
           <div className="login-btn">
@@ -136,3 +107,142 @@ function Login() {
 }
 
 export default Login;
+
+// import React, { useEffect, useState } from "react";
+// import "../Login/Login.css";
+// import * as Yup from "yup";
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import { toast } from "react-toastify";
+
+// const validateLogin = Yup.object().shape({
+//   email: Yup.string()
+//     .email("*Email address is not valid*")
+//     .required("*Email is required"),
+//   password: Yup.string()
+//     .required("*Password is required")
+//     .min(8, "*Password must be atleast 8 letter long"),
+// });
+
+// function Login() {
+//   const [userEmail, setuserEmail] = useState("");
+//   const [userPassword, setuserPassword] = useState("");
+//   const [currentErrors, setCurrentErrors] = useState([]);
+//   const [userData, setUserData] = useState([]);
+//   const [userNotExist, setUserNotExist] = useState(false);
+
+//   const history = useNavigate();
+
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   useEffect(() => {
+//     userData.find((user) => {
+//       if (user.email !== userEmail) {
+//         setUserNotExist(true);
+//       } else {
+//         setUserNotExist(false);
+//       }
+//       return;
+//     });
+//     validateLogin
+//       .validate(
+//         { email: userEmail, password: userPassword },
+//         { abortEarly: false }
+//       )
+//       .catch((err) => {
+//         const errors = {};
+//         err.inner.forEach((e) => {
+//           errors[e.path] = e.message;
+//         });
+//         setCurrentErrors(errors);
+//       });
+//   }, [userEmail, userPassword]);
+
+//   const fetchData = async () => {
+//     const result = await axios.get("http://localhost:3005/user");
+//     setUserData(result.data);
+//   };
+
+//   // console.log("User data", userData);
+
+//   const handleLogin = (e) => {
+//     e.preventDefault();
+
+//     validateLogin
+//       .validate(
+//         { email: userEmail, password: userPassword },
+//         { abortEarly: false }
+//       )
+//       .then((valid) => {
+//         userData.find((user) => {
+//           if (user.email === userEmail && user.password === userPassword) {
+//             localStorage.setItem("email", user.email);
+//             localStorage.setItem("password", user.password);
+//             history("/Product");
+//             toast.success(`Welcome ${user.name}`, {
+//               style: { fontSize: "14px" },
+//             });
+//           }
+//         });
+//       })
+//       .catch((err) => {
+//         const errors = {};
+//         err.inner.forEach((e) => {
+//           errors[e.path] = e.message;
+//         });
+//         setCurrentErrors(errors);
+//       });
+//   };
+
+//   return (
+//     <div className="main-login">
+//       <div className="login-box">
+//         <div className="login-heading">
+//           <h2>
+//             <b>Login</b>
+//           </h2>
+//         </div>
+//         <form action="" className="form" onSubmit={handleLogin}>
+//           <div className="login-input">
+//             <fieldset>
+//               <input
+//                 type="email"
+//                 name="email"
+//                 id="email"
+//                 placeholder="Email"
+//                 onChange={(e) => setuserEmail(e.target.value)}
+//               />
+//               {currentErrors.email && (
+//                 <div style={{ color: "red" }}>{currentErrors.email}</div>
+//               )}
+//               {userNotExist && (
+//                 <div style={{ color: "red" }}>*User is not exist</div>
+//               )}
+//             </fieldset>
+//             <fieldset>
+//               <input
+//                 type="password"
+//                 name="password"
+//                 id="password"
+//                 placeholder="Password"
+//                 onChange={(e) => setuserPassword(e.target.value)}
+//               />
+//               {currentErrors.password && (
+//                 <div style={{ color: "red" }}>{currentErrors.password}</div>
+//               )}
+//             </fieldset>
+//           </div>
+//           <div className="login-btn">
+//             <button type="submit" class="btn btn-primary">
+//               Login
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Login;
