@@ -1,6 +1,6 @@
 import React from "react";
 import image from "../Navbar/logo.png";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "../Navbar/Navbar.css";
 import { toast } from "react-toastify";
 
@@ -48,14 +48,59 @@ function Navbar() {
                   >
                     Product
                   </NavLink>
-                  <NavLink
-                    className="nav-link"
-                    aria-current="page"
-                    to="/"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </NavLink>
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-secondary dropdown-toggle"
+                      type="button"
+                      id="dropdownMenuButton1"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa-solid fa-user icon"></i>
+                    </button>
+                    <ul
+                      class="dropdown-menu"
+                      aria-labelledby="dropdownMenuButton1"
+                    >
+                      <li>
+                        <Link
+                          class="drop-text dropdown-item nav-link "
+                          aria-current="page"
+                          to="/Orders"
+                        >
+                          Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          class="drop-text dropdown-item nav-link "
+                          aria-current="page"
+                          to="/Address"
+                        >
+                          Shipping Address
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          class="drop-text dropdown-item nav-link "
+                          aria-current="page"
+                          to="/ChangePassword"
+                        >
+                          Change Password
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          class="drop-text dropdown-item nav-link "
+                          aria-current="page"
+                          to="/"
+                          onClick={handleLogout}
+                        >
+                          Log Out
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
                 </>
               ) : (
                 <>

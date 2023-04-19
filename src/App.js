@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Crud from "./CRUD/Crud";
+import Crud from "./pages/CRUD/Crud";
 import ClipLoader from "react-spinners/ClipLoader";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./Component/Navbar/Navbar";
-import Login from "./Component/Login/Login";
-import Signup from "./Component/Signup/Signup";
 import Home from "./pages/Home/Home";
 import Footer from "./Component/Footer/Footer";
+import Login from "./pages/Login/Login";
+import Signup from "./pages/Signup/Signup";
+import ChangePassword from "./pages/Profile/Change Password/ChangePassword";
+import Orders from "./pages/Profile/Orders/Orders";
+import Address from "./pages/Profile/Address/Address";
 
 function App() {
   const [loading, setloading] = useState(false);
@@ -48,6 +51,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/Login" element={<Login />} />
               <Route path="/Signup" element={<Signup />} />
+              <Route path="/Orders" element={<Orders />} />
+              <Route path="/Address" element={<Address />} />
+              <Route path="/ChangePassword" element={<ChangePassword />} />
             </Routes>
             <Footer />
           </>
