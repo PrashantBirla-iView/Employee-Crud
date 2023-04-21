@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
+import Filter from "../../Component/Filter/Filter";
 
 const validationSchema = Yup.object().shape({
   id: Yup.string().required("Product ID is required"),
@@ -39,6 +40,8 @@ function Crud() {
   let productID;
   const isLoggedIn = !!localStorage.getItem("email");
   const history = useNavigate();
+
+  const category = [...new Set(product.map((Val) => Val.category))];
 
   useEffect(() => {
     isLoggedIn ? history("/Product") : history("/Login");
@@ -141,6 +144,8 @@ function Crud() {
     const result = await axios.get("http://localhost:3004/data");
     const cat = result.data.filter((item) => item.category === category);
     setProduct(cat);
+    console.log("Category wise product", cat);
+    console.log("Product", product);
   };
 
   const sortProductList = (sortProd) => {
@@ -236,7 +241,7 @@ function Crud() {
         <div className="row">
           <div className="product-table">
             <div className="btn btn-group mt-5 d-flex align-item-center justify-content-end filters">
-              <div className="btn-group category">
+              {/* <div className="btn-group category">
                 <button
                   type="button"
                   class="btn  dropdown-toggle buttons text-white"
@@ -304,7 +309,8 @@ function Crud() {
                     <i className="fa-solid fa-sort-up"></i>
                   </span>
                 </button>
-              </div>
+                </div> */}
+              <Filter setProduct={setProduct} category={category} />
               &nbsp; &nbsp; &nbsp;
               <div className="btn-group add">
                 <button

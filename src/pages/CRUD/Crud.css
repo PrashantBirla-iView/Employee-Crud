@@ -13,7 +13,9 @@
 }
 
 .buttons {
-  background: #264653;
+  background: #264653 !important;
+  color: #fff !important;
+  text-transform: math-auto !important;
 }
 
 .card-container {

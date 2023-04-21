@@ -25,6 +25,17 @@
   /* mix-blend-mode: hard-light; */
 }
 
+.drop-text {
+  list-style: none;
+  text-decoration: none;
+}
+.btn-secondary {
+  color: #264653 !important;
+  box-shadow: none !important;
+  background-color: #fff !important;
+  border-color: #fff !important;
+}
+
 @media only screen and (max-width: 769px) {
   .navbar {
     height: fit-content;
